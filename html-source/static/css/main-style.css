@@ -8,3 +8,11 @@
 .half-width {
   max-width: 50%;
 }
+/* notification template styles*/
+.notie-container {
+  box-shadow: none;
+}
+/* our module changes datepicker to have priority over everything */
+.swal2-container {
+  z-index: 0;
+}
