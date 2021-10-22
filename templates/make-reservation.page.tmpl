@@ -1,0 +1,72 @@
+{{template "base" .}}
+{{ define "title"}}
+    Make Reservation
+{{end}}
+{{define "content" }}
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h1>Make Reservation</h1>
+                <form action="" method="post" class="needs-validation" novalidate>
+                    <div class="form-group mt-5">
+                        <label for="firstName">First Name</label>
+                        <input
+                                type="text"
+                                name="firstName"
+                                id="firstName"
+                                class="form-control"
+                                required
+                                autocomplete="off"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <input
+                                type="text"
+                                name="lastName"
+                                id="lastName"
+                                class="form-control"
+                                required
+                                autocomplete="off"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input
+                                type="email"
+                                name="email"
+                                id="email"
+                                class="form-control"
+                                required
+                                autocomplete="off"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone</label>
+                        <input
+                                type="tel"
+                                name="phone"
+                                id="phone"
+                                class="form-control"
+                                required
+                                autocomplete="off"
+                        />
+                    </div>
+                    <input
+                            type="submit"
+                            value="Make Reservation"
+                            class="btn btn-primary mt-2"
+                    />
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+{{end}}
+{{define "js"}}
+    <!-- add some jquery stuffs -->
+    <script src="/static/node_modules/jquery/dist/jquery.slim.min.js"></script>
+    <script src="/static/node_modules/popper.js/dist/popper.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+{{end}}

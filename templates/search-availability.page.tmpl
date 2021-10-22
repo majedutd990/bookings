@@ -1,0 +1,41 @@
+{{template "base" .}}
+{{ define "title"}}
+    Search for Room
+{{end}}
+{{define "content" }}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6 mt-4">
+                <h1>Search For Availability!</h1>
+                <form action="" method="GET" novalidate class="needs-validation">
+
+                    <div class="row" id="reservation-dates" >
+                        <div class="col">
+                            <label for="start"> Starting Date: </label>
+                            <input type="text" class="form-control mt-2" autocomplete="off" id="start" name="start" placeholder="Arrival" required>
+                        </div>
+                        <div class="col">
+                            <label for="end">Ending Date: </label>
+                            <input type="text" class="form-control mt-2" autocomplete="off" id="end" name="end" placeholder="Departure" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3">
+                        Search For Availability...
+                    </button>
+                </form>
+                <button class="btn btn-success mt-3" id="test-msg">
+                    Test Messaging!
+                </button>
+            </div>
+        </div>
+    </div>
+{{end}}
+{{define "js"}}
+<script >
+    const elem = document.getElementById('reservation-dates');
+    const rangePicker = new DateRangePicker(elem, {
+        format: "yyyy-mm-dd",
+    });
+</script>
+{{end}}

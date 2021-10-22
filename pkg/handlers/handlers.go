@@ -51,3 +51,27 @@ func (m *Repository) About(writer http.ResponseWriter, r *http.Request) {
 }
 
 //&TemplateData{} means an empty Template Data
+
+// Reservation renders the make a reservation page and displays form
+func (m *Repository) Reservation(w http.ResponseWriter, r *http.Request) {
+	render.RenderTemplates(w,"make-reservation.page.tmpl",&models.TemplateData{})
+}
+
+// Generals renders the Generals page and displays form
+func (m *Repository) Generals(w http.ResponseWriter, r *http.Request) {
+	render.RenderTemplates(w,"generals.page.tmpl",&models.TemplateData{})
+}
+
+// Majors renders the Majors page and displays form
+func (m *Repository) Majors(w http.ResponseWriter, r *http.Request) {
+	render.RenderTemplates(w,"majors.page.tmpl",&models.TemplateData{})
+}
+
+// Availability renders the Availability page and displays form
+func (m *Repository) Availability(w http.ResponseWriter, r *http.Request) {
+	render.RenderTemplates(w,"search-availability.page.tmpl",&models.TemplateData{})
+}
+// Contact renders the Contact page and displays form
+func (m *Repository) Contact(w http.ResponseWriter, r *http.Request) {
+	render.RenderTemplates(w,"contact.page.tmpl",&models.TemplateData{})
+}

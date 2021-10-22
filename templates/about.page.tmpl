@@ -1,22 +1,15 @@
 {{template "base" .}}
 {{ define "title"}}
-    <title>About Page</title>
+    About Page
 {{end}}
 {{define "content" }}
-    <div class="container">
-        <div class="row">
-            <div class="col">
-                <h1>This is The About Page</h1>
-                <p>This is The About Page We created earlier</p>
-                <p>This Dta Came from Handlers: {{index .StrMap "test"}}</p>
-                <p>
-                    {{if ne (index .StrMap "remote_ip") "" }}
-                        Your Remote IP Address is {{index .StrMap "remote_ip"}}
-                    {{else}}
-                        I don't know your IP address yet. visit <a href="/">Home page</a> so i can set it.
-                    {{end}}
-                </p>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <h1>This is The About Page</h1>
+                </div>
             </div>
         </div>
-    </div>
+
+
 {{end}}
