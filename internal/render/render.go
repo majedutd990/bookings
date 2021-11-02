@@ -2,8 +2,9 @@ package render
 
 import (
 	"bytes"
-	"github.com/majedutd990/bookings/pkg/config"
-	"github.com/majedutd990/bookings/pkg/models"
+	"github.com/justinas/nosurf"
+	"github.com/majedutd990/bookings/internal/config"
+	"github.com/majedutd990/bookings/internal/models"
 	"html/template"
 	"log"
 	"net/http"
@@ -21,8 +22,8 @@ func NewTemplates(a *config.AppConfig) {
 }
 
 //AddDefaultData Adds some Extra data that we would love to see on every pages
-func AddDefaultData(td *models.TemplateData) *models.TemplateData {
-
+func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateData {
+	td.CSRFToken = nosurf.Token(r)
 	return td
 }
 
@@ -30,7 +31,7 @@ func AddDefaultData(td *models.TemplateData) *models.TemplateData {
 //let us create a function that render templates
 //second param is the name of the template we want to render
 // instead of changing ../../template etc run the main.go using go run cmd/web/*.go
-func RenderTemplates(w http.ResponseWriter, tmpl string, td *models.TemplateData) {
+func RenderTemplates(w http.ResponseWriter, tmpl string, r *http.Request, td *models.TemplateData) {
 
 	var tc map[string]*template.Template
 	// it is a map from str to templates
@@ -51,7 +52,7 @@ func RenderTemplates(w http.ResponseWriter, tmpl string, td *models.TemplateData
 	buf := new(bytes.Buffer)
 	//adding default data to template data
 	// all the tds are pointer based which means they ar addr
-	td = AddDefaultData(td)
+	td = AddDefaultData(td, r)
 	//  applies parsed template to the data structure and writes result to the given writer.
 	// buf makes input output better
 	// here we have the parsed template we can even add more data or different data by manipulating td

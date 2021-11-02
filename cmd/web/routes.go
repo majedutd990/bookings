@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/majedutd990/bookings/pkg/config"
-	"github.com/majedutd990/bookings/pkg/handlers"
+	"github.com/majedutd990/bookings/internal/config"
+	"github.com/majedutd990/bookings/internal/handlers"
 	"net/http"
 )
 
@@ -13,7 +13,7 @@ func routes(app *config.AppConfig) http.Handler {
 	////	 in here we create a new http handler which we often call Mux or a multiplexer
 	////	we use an external package for routing
 	////	we use bmizerany rout package
-	////	remember mux is a htt handler so
+	////	remember mux is a http handler so
 	//mux := pat.New()
 	//
 	//// here we set up our routs
@@ -39,7 +39,11 @@ func routes(app *config.AppConfig) http.Handler {
 	mux.Get("/about", handlers.Repo.About)
 	mux.Get("/generals-quarters", handlers.Repo.Generals)
 	mux.Get("/majors-suites", handlers.Repo.Majors)
+	//searching for availability we need both post and get here the only difference will be the handler
 	mux.Get("/search-availability", handlers.Repo.Availability)
+	mux.Post("/search-availability", handlers.Repo.PostAvailability)
+	mux.Post("/search-availability-json", handlers.Repo.AvailabilityJson)
+
 	mux.Get("/contact", handlers.Repo.Contact)
 	mux.Get("/make-reservation", handlers.Repo.Reservation)
 
@@ -47,7 +51,7 @@ func routes(app *config.AppConfig) http.Handler {
 	//we have to tell this router how to return our static files
 	// we have to create a file server a place that go gets these file from
 	fileServer := http.FileServer(http.Dir("./static/"))
-	mux.Handle("/static/*",http.StripPrefix("/static",fileServer))
+	mux.Handle("/static/*", http.StripPrefix("/static", fileServer))
 
 	return mux
 }

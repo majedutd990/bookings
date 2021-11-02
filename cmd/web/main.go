@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	"github.com/alexedwards/scs/v2"
-	"github.com/majedutd990/bookings/pkg/config"
-	"github.com/majedutd990/bookings/pkg/handlers"
-	"github.com/majedutd990/bookings/pkg/render"
+	"github.com/majedutd990/bookings/internal/config"
+	"github.com/majedutd990/bookings/internal/handlers"
+	"github.com/majedutd990/bookings/internal/render"
 	"log"
 	"net/http"
 	"time"

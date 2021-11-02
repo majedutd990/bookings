@@ -1,9 +1,12 @@
 package handlers
 
 import (
-	"github.com/majedutd990/bookings/pkg/config"
-	"github.com/majedutd990/bookings/pkg/models"
-	"github.com/majedutd990/bookings/pkg/render"
+	"encoding/json"
+	"fmt"
+	"github.com/majedutd990/bookings/internal/config"
+	"github.com/majedutd990/bookings/internal/models"
+	"github.com/majedutd990/bookings/internal/render"
+	"log"
 	"net/http"
 )
 
@@ -35,7 +38,7 @@ func (m *Repository) Home(writer http.ResponseWriter, r *http.Request) {
 	remoteIP := r.RemoteAddr
 	//put it in our session
 	m.App.Session.Put(r.Context(), "remote_ip", remoteIP)
-	render.RenderTemplates(writer, "home.page.tmpl", &models.TemplateData{})
+	render.RenderTemplates(writer, "home.page.tmpl", r, &models.TemplateData{})
 }
 
 //let's send some data to about using a string map
@@ -45,7 +48,7 @@ func (m *Repository) About(writer http.ResponseWriter, r *http.Request) {
 	stringMap["test"] = "Hello, Again!"
 	remoteIp := m.App.Session.GetString(r.Context(), "remote_ip")
 	stringMap["remote_ip"] = remoteIp
-	render.RenderTemplates(writer, "about.page.tmpl", &models.TemplateData{
+	render.RenderTemplates(writer, "about.page.tmpl", r, &models.TemplateData{
 		StrMap: stringMap,
 	})
 }
@@ -54,24 +57,54 @@ func (m *Repository) About(writer http.ResponseWriter, r *http.Request) {
 
 // Reservation renders the make a reservation page and displays form
 func (m *Repository) Reservation(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplates(w,"make-reservation.page.tmpl",&models.TemplateData{})
+	render.RenderTemplates(w, "make-reservation.page.tmpl", r, &models.TemplateData{})
 }
 
 // Generals renders the Generals page and displays form
 func (m *Repository) Generals(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplates(w,"generals.page.tmpl",&models.TemplateData{})
+	render.RenderTemplates(w, "generals.page.tmpl", r, &models.TemplateData{})
 }
 
 // Majors renders the Majors page and displays form
 func (m *Repository) Majors(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplates(w,"majors.page.tmpl",&models.TemplateData{})
+	render.RenderTemplates(w, "majors.page.tmpl", r, &models.TemplateData{})
 }
 
 // Availability renders the Availability page and displays form
 func (m *Repository) Availability(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplates(w,"search-availability.page.tmpl",&models.TemplateData{})
+	render.RenderTemplates(w, "search-availability.page.tmpl", r, &models.TemplateData{})
 }
+
+// PostAvailability renders the Availability page and displays form
+func (m *Repository) PostAvailability(w http.ResponseWriter, r *http.Request) {
+	start := r.Form.Get("start")
+	end := r.Form.Get("end")
+	w.Write([]byte(fmt.Sprintf("The start date is %s and the end date is %s.\n", start, end)))
+}
+
+type jsonResponse struct {
+	Ok      bool   `json:"ok"`
+	Message string `json:"message"`
+}
+
+// AvailabilityJson handles requests for availability and send json responds
+func (m *Repository) AvailabilityJson(w http.ResponseWriter, r *http.Request) {
+
+	jresp := jsonResponse{
+		Ok:      true,
+		Message: "Available!",
+	}
+	out, err := json.MarshalIndent(jresp, "", "     ")
+	if err != nil {
+		log.Fatal(err)
+
+	}
+	log.Println(string(out))
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(out)
+}
+
 // Contact renders the Contact page and displays form
 func (m *Repository) Contact(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplates(w,"contact.page.tmpl",&models.TemplateData{})
+	render.RenderTemplates(w, "contact.page.tmpl", r, &models.TemplateData{})
 }
