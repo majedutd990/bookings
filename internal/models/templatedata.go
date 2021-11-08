@@ -1,5 +1,7 @@
 package models
 
+import "github.com/majedutd990/bookings/internal/forms"
+
 //TemplateData contains our data to be imported in our template(sent from handlers to templats).
 // Can have every data in map formats
 // We use interface{} to map a keyed data which we have not created yet
@@ -15,4 +17,5 @@ type TemplateData struct {
 	Flash     string
 	Warning   string
 	Error     string
+	Form      *forms.Form
 }

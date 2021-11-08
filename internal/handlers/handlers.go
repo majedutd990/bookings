@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/majedutd990/bookings/internal/config"
+	"github.com/majedutd990/bookings/internal/forms"
 	"github.com/majedutd990/bookings/internal/models"
 	"github.com/majedutd990/bookings/internal/render"
 	"log"
@@ -57,7 +58,50 @@ func (m *Repository) About(writer http.ResponseWriter, r *http.Request) {
 
 // Reservation renders the make a reservation page and displays form
 func (m *Repository) Reservation(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplates(w, "make-reservation.page.tmpl", r, &models.TemplateData{})
+
+	var emptyReservation models.Reservation
+	data := make(map[string]interface{})
+	data["reservation"] = emptyReservation
+	var mj = &models.TemplateData{
+		Form: forms.New(nil),
+		Data: data,
+	}
+	render.RenderTemplates(w, "make-reservation.page.tmpl", r, mj)
+
+}
+
+// PostReservation renders the make a reservation page and displays form
+func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
+	//first thing to do when u have a form is to parse form when u have a form in it
+	err := r.ParseForm()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	reservations := models.Reservation{
+		FirstName: r.Form.Get("firstName"),
+		LastName:  r.Form.Get("lastName"),
+		Email:     r.Form.Get("email"),
+		Phone:     r.Form.Get("phone"),
+	}
+	//postform has all of the url values and associated data
+	form := forms.New(r.PostForm)
+	form.Required("firstName", "lastName", "email")
+	form.MinLength("firstName", 3, r)
+	form.IsEmail("email")
+	if !form.Valid() {
+		data := make(map[string]interface{})
+		data["reservation"] = reservations
+		render.RenderTemplates(w, "make-reservation.page.tmpl", r, &models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+		return
+	}
+	m.App.Session.Put(r.Context(), "reservation", reservations)
+	http.Redirect(w, r, "/reservation-summary", http.StatusSeeOther)
+
 }
 
 // Generals renders the Generals page and displays form
@@ -107,4 +151,23 @@ func (m *Repository) AvailabilityJson(w http.ResponseWriter, r *http.Request) {
 // Contact renders the Contact page and displays form
 func (m *Repository) Contact(w http.ResponseWriter, r *http.Request) {
 	render.RenderTemplates(w, "contact.page.tmpl", r, &models.TemplateData{})
+}
+
+// ReservationSummary renders the Contact page and displays form
+func (m *Repository) ReservationSummary(w http.ResponseWriter, r *http.Request) {
+	//we need to type assert it to reservation
+	reservation, ok := m.App.Session.Get(r.Context(), "reservation").(models.Reservation)
+	if !ok {
+		log.Println("Cannot get item from session")
+		m.App.Session.Put(r.Context(), "error", "Can't get reservation from session")
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		return
+
+	}
+	m.App.Session.Remove(r.Context(), "reservation")
+	data := make(map[string]interface{})
+	data["reservation"] = reservation
+	render.RenderTemplates(w, "reservation-summary.page.tmpl", r, &models.TemplateData{
+		Data: data,
+	})
 }

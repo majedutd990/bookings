@@ -1,10 +1,12 @@
 package main
 
 import (
+	"encoding/gob"
 	"fmt"
 	"github.com/alexedwards/scs/v2"
 	"github.com/majedutd990/bookings/internal/config"
 	"github.com/majedutd990/bookings/internal/handlers"
+	"github.com/majedutd990/bookings/internal/models"
 	"github.com/majedutd990/bookings/internal/render"
 	"log"
 	"net/http"
@@ -21,6 +23,8 @@ var session *scs.SessionManager
 
 func main() {
 
+	//what we put in the session
+	gob.Register(models.Reservation{})
 	// change this to true when in production
 	app.InProduction = false
 
