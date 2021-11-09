@@ -2,6 +2,8 @@ package render
 
 import (
 	"bytes"
+	"errors"
+	"fmt"
 	"github.com/justinas/nosurf"
 	"github.com/majedutd990/bookings/internal/config"
 	"github.com/majedutd990/bookings/internal/models"
@@ -12,6 +14,7 @@ import (
 )
 
 var functions = template.FuncMap{}
+var pathToTemplate = "./templates"
 
 // app is a reference to AppConfig that we are sending here from main
 var app *config.AppConfig
@@ -34,7 +37,7 @@ func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateDa
 //let us create a function that render templates
 //second param is the name of the template we want to render
 // instead of changing ../../template etc run the main.go using go run cmd/web/*.go
-func RenderTemplates(w http.ResponseWriter, tmpl string, r *http.Request, td *models.TemplateData) {
+func RenderTemplates(w http.ResponseWriter, tmpl string, r *http.Request, td *models.TemplateData) error {
 
 	var tc map[string]*template.Template
 	// it is a map from str to templates
@@ -50,7 +53,8 @@ func RenderTemplates(w http.ResponseWriter, tmpl string, r *http.Request, td *mo
 	//t is our template related to tmpl input that's been parsed
 	t, ok := tc[tmpl]
 	if !ok {
-		log.Fatal("cannot find the corresponded template")
+		log.Println("cannot find the corresponded template")
+		return errors.New("can't get template from cache")
 	}
 	buf := new(bytes.Buffer)
 	//adding default data to template data
@@ -64,14 +68,16 @@ func RenderTemplates(w http.ResponseWriter, tmpl string, r *http.Request, td *mo
 	_, err := buf.WriteTo(w)
 	if err != nil {
 		log.Println(err)
+		return err
 	}
+	return nil
 }
 
 //CreateTemplateCache let's render all the templates and tmpl files
 func CreateTemplateCache() (map[string]*template.Template, error) {
 	myCache := map[string]*template.Template{}
 	//finds all the pages and put it in a slice of strings
-	pages, err := filepath.Glob("./templates/*.page.tmpl")
+	pages, err := filepath.Glob(fmt.Sprintf("%s/*.page.tmpl", pathToTemplate))
 	if err != nil {
 		return myCache, err
 	}
@@ -95,13 +101,13 @@ func CreateTemplateCache() (map[string]*template.Template, error) {
 			return myCache, err
 		}
 		//finds all the layouts
-		matchesLayout, err := filepath.Glob("./templates/*.layout.tmpl")
+		matchesLayout, err := filepath.Glob(fmt.Sprintf("%s/*.layout.tmpl", pathToTemplate))
 		if err != nil {
 			return myCache, err
 		}
 		//if there is any puts it in ts
 		if len(matchesLayout) > 0 {
-			ts, err = ts.ParseGlob("./templates/*.layout.tmpl")
+			ts, err = ts.ParseGlob(fmt.Sprintf("%s/*.layout.tmpl", pathToTemplate))
 			//there’s also the ParseGlob function which takes glob as an argument and
 			//then parses all files that matches the glob.
 			// I think it merges it with our ts because we used ts.parseGlobe.

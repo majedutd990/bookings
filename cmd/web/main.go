@@ -22,6 +22,22 @@ var app config.AppConfig
 var session *scs.SessionManager
 
 func main() {
+	err := run()
+	if err != nil {
+		log.Fatal(err)
+	}
+	srv := &http.Server{
+		Addr:    portNumber,
+		Handler: routes(&app),
+	}
+	fmt.Println(fmt.Sprintf("Starting Application On Port %s.", portNumber))
+	err = srv.ListenAndServe()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+}
+func run() error {
 
 	//what we put in the session
 	gob.Register(models.Reservation{})
@@ -38,14 +54,14 @@ func main() {
 	session.Cookie.SameSite = http.SameSiteLaxMode
 	// how strict do u wan to be about what site this cookie applies to
 	session.Cookie.Secure = app.InProduction
-	// insists that cookie be encrypted related to https in here we or development mode
-	// we use false in production we have to do the
-
+	// insists that cookie be encrypted related to https in here we are in development mode
+	// we use false in production.
 	//set our config session, so it will be visible to other pkgs like handlers
 	app.Session = session
 	tc, err := render.CreateTemplateCache()
 	if err != nil {
 		log.Fatal("cannot create template cache")
+		return err
 	}
 	app.TemplateCache = tc
 	// the below code means we are in dev mode
@@ -68,14 +84,5 @@ func main() {
 	//_ = http.ListenAndServe(portNumber, nil)
 
 	//	 new version using pat package
-	srv := &http.Server{
-		Addr:    portNumber,
-		Handler: routes(&app),
-	}
-	fmt.Println(fmt.Sprintf("Starting Application On Port %s.", portNumber))
-	err = srv.ListenAndServe()
-	if err != nil {
-		log.Fatal(err)
-	}
-
+	return nil
 }

@@ -1,26 +1,25 @@
 package main
 
 import (
-	"fmt"
 	"github.com/justinas/nosurf"
 	"net/http"
 )
 
-//WriteToConsole next is a convention
-func WriteToConsole(next http.Handler) http.Handler {
-
-	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Println("Hit The Page.")
-		//	 at the end of this we need to move on to the next
-		//	 next might be another bit of middleware
-		//   or might be a program that reads file where we actually return our mux
-		next.ServeHTTP(writer, request)
-	})
-}
+////WriteToConsole next is a convention
+//func WriteToConsole(next http.Handler) http.Handler {
+//
+//	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+//		fmt.Println("Hit The Page.")
+//		//	 at the end of this we need to move on to the next
+//		//	 next might be another bit of middleware
+//		//   or might be a program that reads file where we actually return our mux
+//		next.ServeHTTP(writer, request)
+//	})
+//}
 
 // NoSurf add CSRF protection to all requests
 // most middleware have a similar format to the above code
-// also some may do not have this anonymous function
+// also some may not have this anonymous function
 // lets resolve CSRF Token which is going to use this package
 // https://github.com/justinas/nosurf go get it
 func NoSurf(next http.Handler) http.Handler {

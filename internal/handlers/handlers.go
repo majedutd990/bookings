@@ -88,7 +88,7 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 	//postform has all of the url values and associated data
 	form := forms.New(r.PostForm)
 	form.Required("firstName", "lastName", "email")
-	form.MinLength("firstName", 3, r)
+	form.MinLength("firstName", 3)
 	form.IsEmail("email")
 	if !form.Valid() {
 		data := make(map[string]interface{})
