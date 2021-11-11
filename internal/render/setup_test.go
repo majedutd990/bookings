@@ -5,6 +5,7 @@ import (
 	"github.com/alexedwards/scs/v2"
 	"github.com/majedutd990/bookings/internal/config"
 	"github.com/majedutd990/bookings/internal/models"
+	"log"
 	"net/http"
 	"os"
 	"testing"
@@ -13,10 +14,19 @@ import (
 
 var session *scs.SessionManager
 var testApp config.AppConfig
+var infoLog *log.Logger
+var errorLog *log.Logger
 
 func TestMain(m *testing.M) {
 	gob.Register(models.Reservation{})
 	testApp.InProduction = false
+
+	//log in our std lib
+	infoLog = log.New(os.Stdout, "INFO:\t", log.Ldate|log.Ltime)
+	testApp.InfoLog = infoLog
+	// log.Lshortfile info about error and file
+	errorLog = log.New(os.Stdout, "Error:\t", log.Ldate|log.Ltime|log.Lshortfile)
+	testApp.ErrorLog = errorLog
 
 	session = scs.New()
 	session.Lifetime = 24 * time.Hour

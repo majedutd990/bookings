@@ -6,10 +6,12 @@ import (
 	"github.com/alexedwards/scs/v2"
 	"github.com/majedutd990/bookings/internal/config"
 	"github.com/majedutd990/bookings/internal/handlers"
+	"github.com/majedutd990/bookings/internal/helpers"
 	"github.com/majedutd990/bookings/internal/models"
 	"github.com/majedutd990/bookings/internal/render"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -20,6 +22,10 @@ var app config.AppConfig
 
 // session as above
 var session *scs.SessionManager
+
+// setting up log vars
+var infoLog *log.Logger
+var errorLog *log.Logger
 
 func main() {
 	err := run()
@@ -43,7 +49,12 @@ func run() error {
 	gob.Register(models.Reservation{})
 	// change this to true when in production
 	app.InProduction = false
-
+	//log in our std lib
+	infoLog = log.New(os.Stdout, "INFO:\t", log.Ldate|log.Ltime)
+	app.InfoLog = infoLog
+	// log.Lshortfile info about error and file
+	errorLog = log.New(os.Stdout, "Error:\t", log.Ldate|log.Ltime|log.Lshortfile)
+	app.ErrorLog = errorLog
 	// let declare our sessions
 	session = scs.New()
 	session.Lifetime = 24 * time.Hour
@@ -77,6 +88,8 @@ func run() error {
 	// Repo is the repository used by handlers we make it above
 	// use it below cause home and about are of type repository function
 
+	//we can pass app to helpers here
+	helpers.NewHelper(&app)
 	// - obsolete
 	//http.HandleFunc("/", handlers.Repo.Home)
 	//http.HandleFunc("/about", handlers.Repo.About)
