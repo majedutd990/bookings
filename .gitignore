@@ -23,5 +23,6 @@
 /vendor/
 /Godeps/
 .idea
+database.yml
 # End of https://www.toptal.com/developers/gitignore/api/go
-.yml
+
