@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/alexedwards/scs/v2"
 	"github.com/majedutd990/bookings/internal/config"
+	"github.com/majedutd990/bookings/internal/driver"
 	"github.com/majedutd990/bookings/internal/handlers"
 	"github.com/majedutd990/bookings/internal/helpers"
 	"github.com/majedutd990/bookings/internal/models"
@@ -28,10 +29,11 @@ var infoLog *log.Logger
 var errorLog *log.Logger
 
 func main() {
-	err := run()
+	db, err := run()
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer db.SQL.Close()
 	srv := &http.Server{
 		Addr:    portNumber,
 		Handler: routes(&app),
@@ -43,10 +45,14 @@ func main() {
 	}
 
 }
-func run() error {
+func run() (*driver.DB, error) {
 
 	//what we put in the session
 	gob.Register(models.Reservation{})
+	gob.Register(models.User{})
+	gob.Register(models.Reservation{})
+	gob.Register(models.Room{})
+	gob.Register(models.Restriction{})
 	// change this to true when in production
 	app.InProduction = false
 	//log in our std lib
@@ -69,19 +75,27 @@ func run() error {
 	// we use false in production.
 	//set our config session, so it will be visible to other pkgs like handlers
 	app.Session = session
+
+	//connect to database
+	log.Println("Connecting to database")
+	db, err := driver.ConnectSql("host=localhost port=5432 dbname=bookings user=postgres password=123hj123")
+	if err != nil {
+		log.Fatal("Cannot connect to database. Dying!")
+	}
+	log.Println("Connected to database")
 	tc, err := render.CreateTemplateCache()
 	if err != nil {
 		log.Fatal("cannot create template cache")
-		return err
+		return db, err
 	}
 	app.TemplateCache = tc
 	// the below code means we are in dev mode
 	app.UseCache = app.InProduction
 	//because it's type is pointer to AppConfig, here we send a reference
-	render.NewTemplates(&app)
+	render.NewRenderer(&app)
 
 	// now let's create repo for our handlers and pass our app config here
-	repo := handlers.NewRepo(&app)
+	repo := handlers.NewRepo(&app, db)
 	// now we pass it to handlers which uses it to make Repo Var
 	handlers.NewHandlers(repo)
 
@@ -97,5 +111,5 @@ func run() error {
 	//_ = http.ListenAndServe(portNumber, nil)
 
 	//	 new version using pat package
-	return nil
+	return db, nil
 }

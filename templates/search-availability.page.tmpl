@@ -10,32 +10,32 @@
                 <h1>Search For Availability!</h1>
                 <form action="/search-availability" method="post" novalidate class="needs-validation">
                     <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
-                    <div class="row" id="reservation-dates" >
+                    <div class="row" id="reservation-dates">
                         <div class="col">
                             <label for="start"> Starting Date: </label>
-                            <input type="text" class="form-control mt-2" autocomplete="off" id="start" name="start" placeholder="Arrival" required>
+                            <input type="text" class="form-control mt-2" autocomplete="off" id="start" name="start"
+                                   placeholder="Arrival" required>
                         </div>
                         <div class="col">
                             <label for="end">Ending Date: </label>
-                            <input type="text" class="form-control mt-2" autocomplete="off" id="end" name="end" placeholder="Departure" required>
+                            <input type="text" class="form-control mt-2" autocomplete="off" id="end" name="end"
+                                   placeholder="Departure" required>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary mt-3">
                         Search For Availability...
                     </button>
                 </form>
-                <button class="btn btn-success mt-3" id="test-msg">
-                    Test Messaging!
-                </button>
             </div>
         </div>
     </div>
 {{end}}
 {{define "js"}}
-<script >
-    const elem = document.getElementById('reservation-dates');
-    const rangePicker = new DateRangePicker(elem, {
-        format: "yyyy-mm-dd",
-    });
-</script>
+    <script>
+        const elem = document.getElementById('reservation-dates');
+        const rangePicker = new DateRangePicker(elem, {
+            format: "yyyy-mm-dd",
+            minDate: new Date(),
+        });
+    </script>
 {{end}}

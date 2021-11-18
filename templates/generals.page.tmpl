@@ -48,61 +48,6 @@
 {{end}}
 {{define "js"}}
     <script>
-        document.getElementById("check-availability-button").addEventListener('click', function () {
-            // notify("This is a test message!","success");
-            // notifyModal("Success Text","<em>Hello, World!</em>",'success',"My Text For The Button")
-            // attention.toast({msg:"Hello, world!",icon:'error'})
-            // attention.success({msg:"Hello, world!"});
-            //attention.error({msg:"Hello, world!"});
-            let html = `
-            <form id="check-availability-form" action="" method="post" novalidate class="needs-validation">
-
-                  <div class="row container-fluid" id="reservation-date-modal">
-                        <div class="col">
-                        <label for="start-test"> Starting Date: </label>
-                        <input type="text" class="form-control mt-2" autocomplete="off" id="start-test" name="start-test" placeholder="Arrival" disabled required>
-                        </div>
-                        <div class="col">
-                        <label for="end-test">Ending Date: </label>
-                        <input type="text" class="form-control mt-2" autocomplete="off" id="end-test" name="end-test" placeholder="Departure" disabled required>
-                        </div>
-                  </div>
-
-
-          </form>
-          `;
-            attention.custom({
-                msg: html,
-                title: "Form Test!",
-                willOpen() {
-                    const elem = document.getElementById('reservation-date-modal');
-                    const rp = new DateRangePicker(elem, {
-                        format: 'yyyy-mm-dd',
-                        showOnFocus: true,
-                    })
-                },
-                didOpen: () => {
-                    document.getElementById('start-test').removeAttribute('disabled');
-                    document.getElementById('end-test').removeAttribute('disabled');
-                },
-                callback: function (result) {
-                    console.log("Called");
-                    let form = document.getElementById("check-availability-form");
-                    let formData = new FormData(form);
-                    formData.append("csrf_token", "{{.CSRFToken}}")
-                    //    here we can write some javascript code that will perform an ajax request
-                    fetch('/search-availability-json', {
-                        method: 'post',
-                        body: formData
-                    }).then(response => response.json())
-                        .then(data => {
-                            console.log(data);
-                            console.log(data.ok);
-                            console.log(data.message);
-                        })
-                }
-            });
-        })
-
+        SearchAvailJson("1",{{.CSRFToken}})
     </script>
 {{end}}

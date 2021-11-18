@@ -19,8 +19,8 @@ var pathToTemplate = "./templates"
 // app is a reference to AppConfig that we are sending here from main
 var app *config.AppConfig
 
-//NewTemplates is the function sending the AppConfig struct here
-func NewTemplates(a *config.AppConfig) {
+//NewRenderer is the function sending the AppConfig struct here
+func NewRenderer(a *config.AppConfig) {
 	app = a
 }
 
@@ -33,11 +33,11 @@ func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateDa
 	return td
 }
 
-//RenderTemplates renders html using html templates
+//Template renders html using html templates
 //let us create a function that render templates
 //second param is the name of the template we want to render
 // instead of changing ../../template etc run the main.go using go run cmd/web/*.go
-func RenderTemplates(w http.ResponseWriter, tmpl string, r *http.Request, td *models.TemplateData) error {
+func Template(w http.ResponseWriter, tmpl string, r *http.Request, td *models.TemplateData) error {
 
 	var tc map[string]*template.Template
 	// it is a map from str to templates
