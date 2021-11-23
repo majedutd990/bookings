@@ -15,6 +15,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"testing"
 	"time"
 )
 
@@ -25,9 +26,12 @@ var pathToTemplate = "./../../templates"
 var infoLog *log.Logger
 var errorLog *log.Logger
 
-func getRoutes() http.Handler {
-
+func TestMain(m *testing.M) {
 	gob.Register(models.Reservation{})
+	gob.Register(models.User{})
+	gob.Register(models.Reservation{})
+	gob.Register(models.Room{})
+	gob.Register(models.Restriction{})
 	app.InProduction = false
 
 	//log in our std lib
@@ -43,6 +47,13 @@ func getRoutes() http.Handler {
 	session.Cookie.SameSite = http.SameSiteLaxMode
 	session.Cookie.Secure = app.InProduction
 	app.Session = session
+
+	mailChan := make(chan models.MailData)
+	app.MailChan = mailChan
+	defer close(app.MailChan)
+
+	listenForMail()
+
 	tc, err := CreateTestTemplateCache()
 	if err != nil {
 		log.Fatal("cannot create template cache")
@@ -50,10 +61,15 @@ func getRoutes() http.Handler {
 	app.TemplateCache = tc
 	//we set UseCache to false otherwise it will use the original create template cache in render package
 	app.UseCache = true
-	render.NewTemplates(&app)
+	render.NewRenderer(&app)
 
-	repo := NewRepo(&app)
+	repo := NewTestRepo(&app)
+
 	NewHandlers(repo)
+	os.Exit(m.Run())
+}
+func getRoutes() http.Handler {
+
 	//route file
 	mux := chi.NewRouter()
 	mux.Use(middleware.Recoverer)
@@ -117,4 +133,12 @@ func CreateTestTemplateCache() (map[string]*template.Template, error) {
 
 	}
 	return myCache, nil
+}
+func listenForMail() {
+	go func() {
+		for {
+			_ = <-app.MailChan
+		}
+	}()
+
 }

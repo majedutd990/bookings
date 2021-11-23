@@ -1,6 +1,8 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 //User Our user table
 type User struct {
@@ -58,4 +60,13 @@ type RoomRestriction struct {
 	Restrictions  Restriction
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
+}
+
+//MailData is structure of our Email
+type MailData struct {
+	To       string
+	From     string
+	Subject  string
+	Content  string
+	Template string
 }

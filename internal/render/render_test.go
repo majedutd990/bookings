@@ -31,11 +31,11 @@ func TestRenderTemplates(t *testing.T) {
 		t.Error(err)
 	}
 	var ww myResponseWriter
-	err = RenderTemplates(&ww, "home.page.tmpl", r, &models.TemplateData{})
+	err = Template(&ww, "home.page.tmpl", r, &models.TemplateData{})
 	if err != nil {
 		t.Error("error writing template to browser RenderTemplate")
 	}
-	err = RenderTemplates(&ww, "non-existing.page.tmpl", r, &models.TemplateData{})
+	err = Template(&ww, "non-existing.page.tmpl", r, &models.TemplateData{})
 	if err == nil {
 		t.Error("rendered template which did not exist RenderTemplate")
 	}
@@ -54,7 +54,7 @@ func getSession() (*http.Request, error) {
 }
 
 func TestNewTemplates(t *testing.T) {
-	NewTemplates(app)
+	NewRenderer(app)
 }
 
 func TestCreateTemplateCache(t *testing.T) {
