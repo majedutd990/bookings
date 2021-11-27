@@ -9,13 +9,14 @@ import "github.com/majedutd990/bookings/internal/forms"
 // We deal with it later
 // Also we add some messages to users
 type TemplateData struct {
-	StrMap    map[string]string
-	IntMap    map[string]int
-	FloatMap  map[string]float32
-	Data      map[string]interface{}
-	CSRFToken string
-	Flash     string
-	Warning   string
-	Error     string
-	Form      *forms.Form
+	StrMap          map[string]string
+	IntMap          map[string]int
+	FloatMap        map[string]float32
+	Data            map[string]interface{}
+	CSRFToken       string
+	Flash           string
+	Warning         string
+	Error           string
+	Form            *forms.Form
+	IsAuthenticated int
 }

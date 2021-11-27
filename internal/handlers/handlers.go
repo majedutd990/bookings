@@ -10,6 +10,7 @@ import (
 	"github.com/majedutd990/bookings/internal/render"
 	"github.com/majedutd990/bookings/internal/repository"
 	"github.com/majedutd990/bookings/internal/repository/dbrepo"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -433,4 +434,65 @@ func (m *Repository) BookRoom(w http.ResponseWriter, r *http.Request) {
 	m.App.Session.Put(r.Context(), "reservation", res)
 	http.Redirect(w, r, "/make-reservation", http.StatusSeeOther)
 
+}
+
+func (m *Repository) ShowLogin(w http.ResponseWriter, r *http.Request) {
+	render.Template(w, "login.page.tmpl", r, &models.TemplateData{
+		Form: forms.New(nil),
+	})
+}
+
+//PostShowLogin handles logging user in
+func (m *Repository) PostShowLogin(w http.ResponseWriter, r *http.Request) {
+	//	first thing we should do to secure this login page is to
+	//	prevent session fixation attack
+	_ = m.App.Session.RenewToken(r.Context())
+	//	every session that is stored anywhere in our application
+	//	 has a certain token associated it with it
+	//	 when u do a login or logout it is a good practice to change these token
+	err := r.ParseForm()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	form := forms.New(r.PostForm)
+	email := r.Form.Get("email")
+	password := r.Form.Get("password")
+	form.Required("email", "password")
+	form.IsEmail("email")
+	if !form.Valid() {
+		render.Template(w, "login.page.tmpl", r, &models.TemplateData{
+			Form: form,
+		})
+		return
+	}
+
+	id, _, err := m.DB.Authenticate(email, password)
+
+	if err != nil {
+		log.Println(err)
+		m.App.Session.Put(r.Context(), "error", "invalid login credentials!")
+		http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+		return
+	}
+	m.App.Session.Put(r.Context(), "user_id", id)
+	m.App.Session.Put(r.Context(), "flash", "logged in successfully!")
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+//LogOut logs out user
+func (m *Repository) LogOut(w http.ResponseWriter, r *http.Request) {
+	_ = m.App.Session.Destroy(r.Context())
+	_ = m.App.Session.RenewToken(r.Context())
+	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+}
+
+// remember every time we stop our app and restart it again all of our sessions are gone
+// because we use cookies
+// in production we may not want to use simple cookies to store our session
+// u may want something like Redis 'is perfect for storing sessions'
+
+func (m *Repository) AdminDashboard(w http.ResponseWriter, r *http.Request) {
+
+	render.Template(w, "admin-dashboard.page.tmpl", r, &models.TemplateData{})
 }
