@@ -123,5 +123,56 @@ func (p *testDBRepo) UpdateUser(u models.User) error {
 }
 
 func (p *testDBRepo) Authenticate(email, testPassword string) (int, string, error) {
-	return 1, "", nil
+	//correct credential
+	//we are faking what happens in db
+	if email == "me@here.ca" {
+		return 1, "", nil
+	}
+	return 0, "", errors.New("some error")
+}
+
+func (p *testDBRepo) AllReservation() ([]models.Reservation, error) {
+	var reservations []models.Reservation
+	return reservations, nil
+}
+func (p *testDBRepo) NewReservation() ([]models.Reservation, error) {
+	var reservations []models.Reservation
+	return reservations, nil
+}
+
+func (p *testDBRepo) GetReservationById(id int) (models.Reservation, error) {
+	var res models.Reservation
+	return res, nil
+}
+
+func (p *testDBRepo) UpdateReservation(u models.Reservation) error {
+	return nil
+}
+
+func (p *testDBRepo) DeleteReservationById(id int) error {
+	return nil
+}
+
+func (p *testDBRepo) UpdateProcessedFroReservation(id, processed int) error {
+	return nil
+}
+
+func (p *testDBRepo) GetAllRooms() ([]models.Room, error) {
+	var rooms []models.Room
+	return rooms, nil
+}
+func (p *testDBRepo) GetRestrictionsFroRoomByDate(roomId int, startDate, endDate time.Time) ([]models.RoomRestriction, error) {
+	var restrictions []models.RoomRestriction
+	
+	return restrictions, nil
+}
+
+func (p *testDBRepo) InsertBlockForRoom(r models.RoomRestriction) error {
+
+	return nil
+}
+
+func (p *testDBRepo) DeleteBlockByID(id int) error {
+
+	return nil
 }

@@ -11,9 +11,41 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
+	"time"
 )
 
-var functions = template.FuncMap{}
+//functions what this allows us to do is to specify certain functions that are available to our golang template
+var functions = template.FuncMap{
+	"humanDate":  HumanDate,
+	"formatDate": FormatDate,
+	"iterate":    Iterate,
+	"add":        Add,
+}
+
+func Add(a, b int) int {
+	return a + b
+}
+
+//Iterate returns a slice of ints starting at one going to count
+func Iterate(count int) []int {
+	var i int
+	var items []int
+	for i = 0; i < count; i++ {
+		items = append(items, i)
+	}
+	return items
+}
+
+//FormatDate format the date to whatever we want
+func FormatDate(t time.Time, format string) string {
+	return t.Format(format)
+}
+
+//HumanDate return times in format YYYY-MM-DD
+func HumanDate(t time.Time) string {
+	return t.Format("2006-01-02")
+}
+
 var pathToTemplate = "./templates"
 
 // app is a reference to AppConfig that we are sending here from main

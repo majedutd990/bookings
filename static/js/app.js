@@ -70,11 +70,6 @@ function Prompt() {
             backdrop: false,
             showCancelButton: true,
             focusConfirm: false,
-            preConfirm: () => {
-                if (c.preConfirm() !== undefined) {
-                    c.preConfirm()
-                }
-            },
             didOpen: () => {
                 if (c.didOpen() !== undefined) {
                     c.didOpen();
