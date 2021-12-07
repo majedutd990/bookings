@@ -5,8 +5,8 @@
 {{define "content" }}
     <div class="container">
         <div class="row">
-            <div class="col">
-                <h1>Log in</h1>
+            <div class="col-md-8 offset-2">
+                <h1 class="mt-2">Log in</h1>
                 <form method="post" action="/user/login" novalidate>
                     <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
                     <div class="form-group mt-2">

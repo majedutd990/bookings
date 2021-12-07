@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/gob"
+	"flag"
 	"fmt"
 	"github.com/alexedwards/scs/v2"
 	"github.com/majedutd990/bookings/internal/config"
@@ -60,8 +61,31 @@ func run() (*driver.DB, error) {
 
 	mailChan := make(chan models.MailData)
 	app.MailChan = mailChan
+	//let's read some of our configuration atr values from command line as a flag with -
 	// change this to true when in production
-	app.InProduction = false
+	inProduction := flag.Bool("production", true, "Application is in production!")
+	useCache := flag.Bool("cache", true, "Use template cache (in production true)!")
+	// let's specify database info because we don't want to put them in our code base we get it from command line
+	dbName := flag.String("dbname", "", "DataBase Name")
+	dbHost := flag.String("dbhost", "localhost", "DataBase Host")
+	dbUser := flag.String("dbuser", "", "DataBase username")
+	dbPass := flag.String("dbpass", "", "DataBase password")
+	dbPort := flag.String("dbport", "5432", "DataBase port")
+	dbSSL := flag.String("dbssl", "disable", "DataBase SSL settings (disable, prefer,require)")
+	// let's parse them
+	flag.Parse()
+	// prefer use ssl if it exists, require u must have it
+	// remember all of them are pointers so should use * indirect access operator
+	// we set all of them in run.sh
+	// also we need to check for the necessary flags
+	// we can also use .env file and also a package for it go check it out
+
+	if *dbName == "" || *dbUser == "" {
+		fmt.Println("Missing required flags!")
+		os.Exit(1)
+	}
+
+	app.InProduction = *inProduction
 	//log in our std lib
 	infoLog = log.New(os.Stdout, "INFO:\t", log.Ldate|log.Ltime)
 	app.InfoLog = infoLog
@@ -85,7 +109,10 @@ func run() (*driver.DB, error) {
 
 	//connect to database
 	log.Println("Connecting to database")
-	db, err := driver.ConnectSql("host=localhost port=5432 dbname=bookings user=postgres password=123hj123")
+
+	connectionString := fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s sslmode=%s", *dbHost, *dbPort, *dbName, *dbUser, *dbPass, *dbSSL)
+
+	db, err := driver.ConnectSql(connectionString)
 	if err != nil {
 		log.Fatal("Cannot connect to database. Dying!")
 	}
@@ -98,7 +125,7 @@ func run() (*driver.DB, error) {
 	}
 	app.TemplateCache = tc
 	// the below code means we are in dev mode
-	app.UseCache = app.InProduction
+	app.UseCache = *useCache
 	//because it's type is pointer to AppConfig, here we send a reference
 	render.NewRenderer(&app)
 

@@ -86,6 +86,7 @@ func Template(w http.ResponseWriter, tmpl string, r *http.Request, td *models.Te
 	}
 
 	//t is our template related to tmpl input that's been parsed
+	// it is of type template
 	t, ok := tc[tmpl]
 	if !ok {
 		log.Println("cannot find the corresponded template")
@@ -108,7 +109,7 @@ func Template(w http.ResponseWriter, tmpl string, r *http.Request, td *models.Te
 	return nil
 }
 
-//CreateTemplateCache let's render all the templates and tmpl files
+//CreateTemplateCache let's render all the templates and tmpl files and returns a map of str to tmpl
 func CreateTemplateCache() (map[string]*template.Template, error) {
 	myCache := map[string]*template.Template{}
 	//finds all the pages and put it in a slice of strings

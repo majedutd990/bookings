@@ -813,14 +813,15 @@ func (m *Repository) PostAdminShowReservation(w http.ResponseWriter, r *http.Req
 
 //AdminProcessReservation makes a reservation processed
 func (m *Repository) AdminProcessReservation(w http.ResponseWriter, r *http.Request) {
-	id, _ := strconv.Atoi(chi.URLParam(r, "id"))
-	//if err != nil {
-	//	helpers.ServerError(w, err)
-	//	return
-	//}
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		m.App.Session.Put(r.Context(), "error", "error in url!")
+		http.Redirect(w, r, fmt.Sprintf("/admin/dashboard"), http.StatusSeeOther)
+		return
+	}
 	src := chi.URLParam(r, "src")
 
-	err := m.DB.UpdateProcessedFroReservation(id, 1)
+	err = m.DB.UpdateProcessedFroReservation(id, 1)
 	if err != nil {
 		helpers.ServerError(w, err)
 		return
@@ -839,14 +840,16 @@ func (m *Repository) AdminProcessReservation(w http.ResponseWriter, r *http.Requ
 
 //AdminDeleteReservation makes a reservation gone
 func (m *Repository) AdminDeleteReservation(w http.ResponseWriter, r *http.Request) {
-	id, _ := strconv.Atoi(chi.URLParam(r, "id"))
-	//if err != nil {
-	//	helpers.ServerError(w, err)
-	//	return
-	//}
+
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		m.App.Session.Put(r.Context(), "error", "error in url!")
+		http.Redirect(w, r, fmt.Sprintf("/admin/dashboard"), http.StatusSeeOther)
+		return
+	}
 	src := chi.URLParam(r, "src")
 
-	err := m.DB.DeleteReservationById(id)
+	err = m.DB.DeleteReservationById(id)
 	if err != nil {
 		helpers.ServerError(w, err)
 		return

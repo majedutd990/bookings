@@ -973,16 +973,26 @@ var adminDeleteReservationTests = []struct {
 	queryParams          string
 	expectedResponseCode int
 	expectedLocation     string
+	url                  string
 }{
+	{
+		name:                 "incorrect url",
+		queryParams:          "",
+		url:                  "admin/process/delete/cal/fddf/do",
+		expectedResponseCode: http.StatusSeeOther,
+		expectedLocation:     "/admin/dashboard",
+	},
 	{
 		name:                 "delete-reservation",
 		queryParams:          "",
+		url:                  "admin/process/delete/cal/1/do",
 		expectedResponseCode: http.StatusSeeOther,
 		expectedLocation:     "",
 	},
 	{
 		name:                 "delete-reservation-back-to-cal",
 		queryParams:          "?y=2021&m=12",
+		url:                  "admin/process/delete/cal/1/do",
 		expectedResponseCode: http.StatusSeeOther,
 		expectedLocation:     "",
 	},
@@ -990,7 +1000,8 @@ var adminDeleteReservationTests = []struct {
 
 func TestAdminDeleteReservation(t *testing.T) {
 	for _, e := range adminDeleteReservationTests {
-		req, _ := http.NewRequest("GET", fmt.Sprintf("/admin/process/delete/cal/1/do%s", e.queryParams), nil)
+		eurl := e.url + "%s"
+		req, _ := http.NewRequest("GET", fmt.Sprintf(eurl, e.queryParams), nil)
 		ctx := getCtx(req)
 		req = req.WithContext(ctx)
 
@@ -999,8 +1010,14 @@ func TestAdminDeleteReservation(t *testing.T) {
 		handler := http.HandlerFunc(Repo.AdminDeleteReservation)
 		handler.ServeHTTP(rr, req)
 
-		if rr.Code != http.StatusSeeOther {
+		if rr.Code != e.expectedResponseCode {
 			t.Errorf("failed %s: expected code %d, but got %d", e.name, e.expectedResponseCode, rr.Code)
+		}
+		if e.expectedLocation != "" {
+			actualLocation, _ := rr.Result().Location()
+			if actualLocation.String() != e.expectedLocation {
+				t.Errorf("failed %s: expected location %s, but went %s", e.name, e.expectedLocation, actualLocation.String())
+			}
 		}
 	}
 }
@@ -1008,18 +1025,28 @@ func TestAdminDeleteReservation(t *testing.T) {
 var adminProcessReservationTests = []struct {
 	name                 string
 	queryParams          string
+	url                  string
 	expectedResponseCode int
 	expectedLocation     string
 }{
 	{
+		name:                 "incorrect url",
+		queryParams:          "",
+		url:                  "/admin/process/reservation/cal/ij/do",
+		expectedResponseCode: http.StatusSeeOther,
+		expectedLocation:     "/admin/dashboard",
+	},
+	{
 		name:                 "process-reservation",
 		queryParams:          "",
+		url:                  "/admin/process/reservation/cal/1/do",
 		expectedResponseCode: http.StatusSeeOther,
 		expectedLocation:     "",
 	},
 	{
 		name:                 "process-reservation-back-to-cal",
 		queryParams:          "?y=2021&m=12",
+		url:                  "/admin/process/reservation/cal/1/do",
 		expectedResponseCode: http.StatusSeeOther,
 		expectedLocation:     "",
 	},
@@ -1030,17 +1057,21 @@ func TestRepository_AdminProcessReservation(t *testing.T) {
 	for _, e := range adminProcessReservationTests {
 
 		var req *http.Request
-		req, _ = http.NewRequest("GET", fmt.Sprintf("/admin/process/reservation/cal/1/do%s", e.queryParams), nil)
-		log.Println(req.URL.RequestURI())
+		eurl := e.url + "%s"
+		req, _ = http.NewRequest("GET", fmt.Sprintf(eurl, e.queryParams), nil)
 		ctx := getCtx(req)
 		req = req.WithContext(ctx)
-
 		rr := httptest.NewRecorder()
-
 		handler := http.HandlerFunc(Repo.AdminProcessReservation)
 		handler.ServeHTTP(rr, req)
-		if rr.Code != http.StatusSeeOther {
+		if rr.Code != e.expectedResponseCode {
 			t.Errorf("failed %s: expected code %d, but got %d", e.name, e.expectedResponseCode, rr.Code)
+		}
+		if e.expectedLocation != "" {
+			actualLocation, _ := rr.Result().Location()
+			if actualLocation.String() != e.expectedLocation {
+				t.Errorf("failed %s: expected location %s, but went %s", e.name, e.expectedLocation, actualLocation.String())
+			}
 		}
 	}
 }

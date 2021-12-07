@@ -1,18 +1,20 @@
 .my-footer {
-  height: 8rem;
-  background-color: #163b65;
-  margin-top: 1.2rem;
-  padding: 1rem;
-  color: white;
+    background-color: #163b65;
+    margin-top: 1.5rem;
+    padding: 1rem;
+    color: white;
 }
+
 .half-width {
-  max-width: 50%;
+    max-width: 50%;
 }
+
 /* notification template styles*/
 .notie-container {
-  box-shadow: none;
+    box-shadow: none;
 }
+
 /* our module changes datepicker to have priority over everything */
 .swal2-container {
-  z-index: 0;
+    z-index: 0;
 }
